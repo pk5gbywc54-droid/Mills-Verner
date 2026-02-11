@@ -5,11 +5,11 @@ const sendBtn = document.getElementById('send-btn');
 // Memory for session
 let memory = [];
 
-// Idea pool (expand anytime)
+// Pools for random outputs
 const ideaPool = [
   "Start a TikTok or YouTube channel sharing tutorials or tips",
   "Buy and sell items online (eBay, Facebook Marketplace)",
-  "Offer yard/landscaping services in your neighborhood",
+  "Offer yard/landscaping services",
   "Make a simple web app or tool and share it for free",
   "Create a digital product (PDF guides, templates) and sell it online",
   "Design merch or stickers and sell online",
@@ -24,20 +24,48 @@ const ideaPool = [
   "Make a local service business (dog walking, cleaning, delivery)"
 ];
 
-// Function to get random ideas (true random)
-function generateIdeas(count = 5) {
-  const ideas = [];
-  const usedIndices = new Set();
+const dailyPool = [
+  "Money: Sell items online today",
+  "Money: Offer local services (yard work, tutoring, deliveries)",
+  "Skill: Learn 30 minutes Python",
+  "Skill: Watch one tutorial on AI prompts",
+  "Personal: Meditate for 5 minutes",
+  "Personal: Go for a short walk",
+  "Personal: Organize your workspace",
+];
 
-  while (ideas.length < count && usedIndices.size < ideaPool.length) {
-    const index = Math.floor(Math.random() * ideaPool.length);
-    if (!usedIndices.has(index)) {
-      usedIndices.add(index);
-      ideas.push(ideaPool[index]);
-    }
-  }
+const moneyPool = [
+  "Quick: Offer lawn services today",
+  "Quick: Sell old electronics online",
+  "Long-term: Start YouTube channel",
+  "Long-term: Build a small digital product",
+  "Next: Plan first 5 YouTube videos",
+  "Next: Research local gigs you can offer"
+];
 
-  return ideas.join("\n");
+const buildPool = [
+  "Build: Personal website",
+  "Build: Simple portfolio site",
+  "Build: Small web app for practice",
+  "Tools: Replit, Canva",
+  "Steps: 1) Choose template 2) Add content 3) Publish",
+  "Steps: 1) Sketch idea 2) Build prototype 3) Share with friends"
+];
+
+const studyPool = [
+  "Concept: Variables in Python",
+  "Concept: Loops in Python",
+  "Concept: Functions in Python",
+  "Explanation: Variables store information",
+  "Explanation: Loops repeat tasks",
+  "Practice: Create 5 variables",
+  "Practice: Write a for-loop that counts to 10"
+];
+
+// Utility to pick N random elements from a pool
+function pickRandom(pool, count = 3) {
+  const shuffled = [...pool].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
 }
 
 function appendMessage(text, className) {
@@ -54,26 +82,41 @@ function agentResponse(command) {
 
   switch(command.toLowerCase()) {
     case "daily":
-      response = "Money: Sell items online today.\nSkill: Learn 30 min Python.\nPersonal: Meditate 5 min.";
+      response = pickRandom(dailyPool, 3).join("\n");
       break;
+
     case "money":
-      response = "Quick: Offer lawn services today.\nLong-term: Start YouTube channel.\nNext: Plan first 5 videos.";
+      response = pickRandom(moneyPool, 3).join("\n");
       break;
+
     case "build":
-      response = "Build: Personal website.\nTools: Replit (free), Canva.\nSteps: 1) Choose template 2) Add content 3) Publish.";
+      response = pickRandom(buildPool, 3).join("\n");
       break;
+
     case "study":
-      response = "Concept: Variables in Python.\nExplanation: Variables store info.\nPractice: Create 5 variables.";
+      response = pickRandom(studyPool, 3).join("\n");
       break;
+
     case "plan":
-      response = "Goal: Finish first website.\nTasks: 1) Choose template 2) Write content 3) Publish\nTime: 2 hours";
+      // For plan, we can mix daily + build + study randomly
+      response = [
+        "Plan your day:",
+        ...pickRandom(dailyPool, 2),
+        ...pickRandom(buildPool, 2),
+        ...pickRandom(studyPool, 2)
+      ].join("\n");
       break;
+
     case "ideas":
-      response = "Here are some fresh ideas for you:\n" + generateIdeas(5);
+      response = "Here are some fresh ideas:\n" + pickRandom(ideaPool, 5).join("\n");
       break;
+
     case "memory":
-      response = memory.join("\n");
+      // Show past commands and responses shuffled
+      const shuffledMemory = [...memory].sort(() => 0.5 - Math.random());
+      response = shuffledMemory.join("\n");
       break;
+
     default:
       response = "Command not recognized. Try: daily, money, build, study, plan, ideas, memory.";
   }
