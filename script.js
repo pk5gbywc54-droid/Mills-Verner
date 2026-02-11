@@ -5,7 +5,7 @@ const sendBtn = document.getElementById('send-btn');
 // Memory for session
 let memory = [];
 
-// Idea pool (you can expand this)
+// Idea pool (expand anytime)
 const ideaPool = [
   "Start a TikTok or YouTube channel sharing tutorials or tips",
   "Buy and sell items online (eBay, Facebook Marketplace)",
@@ -16,13 +16,28 @@ const ideaPool = [
   "Offer tutoring in subjects you excel at",
   "Build AI prompts and sell them to creators",
   "Start a newsletter on a niche topic",
-  "Make a mini online course or tutorial series"
+  "Make a mini online course or tutorial series",
+  "Start a blog on a hobby or interest",
+  "Create free templates for Canva or Notion",
+  "Teach coding basics online",
+  "Develop simple mobile games",
+  "Make a local service business (dog walking, cleaning, delivery)"
 ];
 
-// Function to get random ideas
-function generateIdeas(count = 3) {
-  const shuffled = ideaPool.sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, count).join("\n");
+// Function to get random ideas (true random)
+function generateIdeas(count = 5) {
+  const ideas = [];
+  const usedIndices = new Set();
+
+  while (ideas.length < count && usedIndices.size < ideaPool.length) {
+    const index = Math.floor(Math.random() * ideaPool.length);
+    if (!usedIndices.has(index)) {
+      usedIndices.add(index);
+      ideas.push(ideaPool[index]);
+    }
+  }
+
+  return ideas.join("\n");
 }
 
 function appendMessage(text, className) {
@@ -53,15 +68,12 @@ function agentResponse(command) {
     case "plan":
       response = "Goal: Finish first website.\nTasks: 1) Choose template 2) Write content 3) Publish\nTime: 2 hours";
       break;
-
     case "ideas":
-      response = "Here are some new ideas for you:\n" + generateIdeas(5);
+      response = "Here are some fresh ideas for you:\n" + generateIdeas(5);
       break;
-
     case "memory":
       response = memory.join("\n");
       break;
-
     default:
       response = "Command not recognized. Try: daily, money, build, study, plan, ideas, memory.";
   }
